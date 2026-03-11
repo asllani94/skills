@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "ing-skill-generator": {
+      "source": "asllani94/skills",
+      "sourceType": "github",
+      "computedHash": "309a46c444f264568387e3ed8cc70ca40a1b417a1c97ae5a56eacb05fc6f2002"
+    }
+  }
+}
