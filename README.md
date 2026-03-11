@@ -25,13 +25,12 @@ npx skills install <skill-name>
 ## Repository Structure
 
 ```
-.github/
-└── skills/
-    └── <skill-name>/
-        ├── SKILL.md      # Main skill definition
-        ├── agents/       # Agent definitions (if applicable)
-        ├── scripts/      # Utility scripts
-        └── ...
+skills/
+└── <skill-name>/
+    ├── SKILL.md      # Main skill definition
+    ├── agents/       # Agent definitions (if applicable)
+    ├── scripts/      # Utility scripts
+    └── ...
 ```
 
 ## Available Skills
