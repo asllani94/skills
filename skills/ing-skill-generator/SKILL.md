@@ -1,11 +1,3 @@
-<!--
-  SPDX-License-Identifier: Apache-2.0
-  
-  This file is a derivative work based on skill-creator.
-  See NOTICE.md for attribution and modification details.
-  
-  Copyright 2026 Arnold Asllani
--->
 ---
 name: ing-skill-generator
 description: >
