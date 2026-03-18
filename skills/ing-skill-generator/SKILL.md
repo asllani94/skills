@@ -510,7 +510,7 @@ When asked to generate a skill from a repo:
    - Ensure no broken references
 
 6. **Save to appropriate location**
-   - Default: `.github/skills/[tool-name]/SKILL.md`
+   - Default: `.agents/skills/[tool-name]/SKILL.md`
 
 ---
 
