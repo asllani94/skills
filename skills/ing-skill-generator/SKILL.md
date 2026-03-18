@@ -69,8 +69,7 @@ Start by understanding what the user wants. Key questions:
 
 1. **What repository?** — **Infer this automatically**: the repository to analyze is the one that contains this skill. Since skills live at `.agents/skills/<skill-name>/SKILL.md`, the repository root is three levels up from the SKILL.md file. Confirm with the user only if this can't be determined or if they explicitly name a different path.
 2. **What tool/framework?** Confirm the tool name if not obvious from the repo
-3. **Any specific focus?** Sometimes users want only certain parts (e.g., "just the API, not the tutorials")
-4. **Run test cases?** Suggest yes for complex repos, optional for simple ones
+3. **Run test cases?** Suggest yes for complex repos, optional for simple ones
 
 If the conversation already contains this info (e.g., "generate a skill from /tmp/baker"), extract it and confirm.
 
@@ -528,7 +527,7 @@ Execute this task:
 - Skill path: <path-to-skill>/SKILL.md
 - Task: <eval prompt - e.g., "Generate a skill from the Baker docs at /tmp/baker">
 - Input files: <path to cloned repo>
-- Save outputs to: <workspace>/iteration-<N>/eval-<name>/with_skill/outputs/
+- Save outputs to: <workspace>/iteration-<N>/eval-<name>/with_skill/run-1/outputs/
 - Outputs to save: The generated SKILL.md file
 
 IMPORTANT: First read the skill, then follow its instructions.
@@ -539,7 +538,7 @@ IMPORTANT: First read the skill, then follow its instructions.
 Execute this task (no skill guidance - baseline):
 - Task: <same eval prompt>
 - Input files: <same repo path>
-- Save outputs to: <workspace>/iteration-<N>/eval-<name>/without_skill/outputs/
+- Save outputs to: <workspace>/iteration-<N>/eval-<name>/without_skill/run-1/outputs/
 - Outputs to save: The generated SKILL.md file
 ```
 
@@ -593,28 +592,27 @@ When each subagent completes, save timing to `timing.json`:
 
 ### Step 4: Grade, aggregate, and launch viewer
 
-1. **Grade each run** — spawn a grader subagent that reads `agents/grader.md` and evaluates assertions. Save to `grading.json`:
+1. **Grade each run** — spawn a grader subagent with the absolute path to `<skill-dir>/agents/grader.md` and have it evaluate the assertions. Each run gets its own flat `grading.json` saved as a sibling to `outputs/`:
 
 ```json
 {
-  "with_skill": {
-    "assertions": [
-      {"text": "Has YAML frontmatter", "passed": true, "evidence": "File starts with ---"},
-      {"text": "All 8 sections present", "passed": true, "evidence": "Found sections 1-8"}
-    ],
+  "expectations": [
+    {"text": "Has YAML frontmatter", "passed": true, "evidence": "File starts with ---"},
+    {"text": "All 8 sections present", "passed": true, "evidence": "Found sections 1-8"}
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 0,
+    "total": 2,
     "pass_rate": 1.0
   },
-  "without_skill": {
-    "assertions": [
-      {"text": "Has YAML frontmatter", "passed": false, "evidence": "No --- delimiters found"},
-      {"text": "All 8 sections present", "passed": false, "evidence": "Missing FAQ, Glossary"}
-    ],
-    "pass_rate": 0.17
-  },
-  "winner": "with_skill",
-  "notes": "Skill enforces ING template structure"
+  "claims": [],
+  "user_notes_summary": {"uncertainties": [], "needs_review": [], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "No suggestions, evals look solid"}
 }
 ```
+
+Save to `<workspace>/iteration-<N>/eval-<name>/with_skill/run-1/grading.json` (and the same pattern for `without_skill/run-1/grading.json`).
 
 2. **Aggregate into benchmark:**
 ```bash
@@ -755,7 +753,14 @@ Present the eval set for review using the HTML template:
    - `__SKILL_DESCRIPTION_PLACEHOLDER__` → current description
 3. Write to temp file and open: `open /tmp/eval_review_ing-skill-generator.html`
 4. User edits queries, toggles should-trigger, then clicks "Export Eval Set"
-5. File downloads to `~/Downloads/eval_set.json`
+5. File downloads to `~/Downloads/eval_set.json` as a JSON array with this format:
+   ```json
+   [
+     {"query": "I have the Baker docs at ~/projects/baker...", "should_trigger": true},
+     {"query": "How do I configure Baker retry policies?", "should_trigger": false}
+   ]
+   ```
+6. Copy the downloaded file to the workspace: `cp ~/Downloads/eval_set.json <workspace>/trigger-eval.json`
 
 This step matters — bad eval queries lead to bad descriptions.
 
