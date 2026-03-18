@@ -25,7 +25,7 @@ can use in their Spring Boot / Java 21 projects.
 
 At a high level, the process goes like this:
 
-1. User provides a path to a locally cloned ING documentation repository
+1. Identify the target repository — by default, the repository that contains this skill (three levels up from `.agents/skills/<name>/SKILL.md`); use a different path only if the user specifies one
 2. Analyze the repo structure, identify tool name, latest version, documentation files
 3. Extract and synthesize content following ING skill template (8 sections)
 4. Generate the SKILL.md with proper frontmatter and verbatim code examples
@@ -67,7 +67,7 @@ This is the core workflow for generating ING skills from documentation repositor
 
 Start by understanding what the user wants. Key questions:
 
-1. **What repository?** Get the local path to the cloned repo (e.g., `/tmp/baker-docs`, `~/projects/merak-sdk`)
+1. **What repository?** — **Infer this automatically**: the repository to analyze is the one that contains this skill. Since skills live at `.agents/skills/<skill-name>/SKILL.md`, the repository root is three levels up from the SKILL.md file. Confirm with the user only if this can't be determined or if they explicitly name a different path.
 2. **What tool/framework?** Confirm the tool name if not obvious from the repo
 3. **Any specific focus?** Sometimes users want only certain parts (e.g., "just the API, not the tutorials")
 4. **Run test cases?** Suggest yes for complex repos, optional for simple ones
